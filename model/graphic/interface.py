@@ -37,12 +37,30 @@ class InterfaceGrafica:
         self.botaoReflexao = Button(self.containerBotoes, text="Reflexões", bd=2, font=self.fonteTitulos)
         self.botaoReflexao.pack(side=LEFT, fill=X, expand=YES)
         
-        self.canvasElement = Canvas(self.containerCanvas)
+        self.vbar = Scrollbar(self.containerCanvas, orient='vertical')
+        self.vbar.pack(side=RIGHT)
+        
+        self.hbar = Scrollbar(self.containerCanvas, orient='horizontal')
+        self.hbar.pack(side=BOTTOM)
+        
+        self.canvasElement = Canvas(self.containerCanvas, highlightthickness=0, xscrollcommand=self.hbar.set, yscrollcommand=self.vbar.set)
         self.canvasElement.pack(anchor='nw', fill=BOTH, expand=YES)
         
+        self.desenhar = canvas.DesenhosCanvas(self.canvasElement)
+        self.desenhar.setImscale(1.0)
+        self.desenhar.setDelta(1.3)
+        
+        self.vbar.configure(command=self.desenhar.scroll_y)
+        self.vbar.configure(command=self.desenhar.scroll_x)
+        
+        self.canvasElement.bind('<Configure>', self.desenhar.show_image)
+        self.canvasElement.bind('<ButtonPress-1>', self.desenhar.move_from)
+        self.canvasElement.bind('<B1-Motion>', self.desenhar.move_to)
+        # self.canvasElement.bind('<MouseWheel>', self.wheel)  # with Windows and MacOS, but not Linux
+        self.canvasElement.bind('<Button-5>', self.desenhar.wheel)  # only with Linux, wheel scroll down
+        self.canvasElement.bind('<Button-4>', self.desenhar.wheel)  # only with Linux, wheel scroll up
+        
         self.botaoAbrirImagem = Button(self.containerBotoes2, text="Abrir imagem", bd=2, font=self.fonteTitulos,
-            command=lambda: util.setImageWithDialog(self.canvasElement)
+            command=lambda: util.setImageWithDialog(self.canvasElement, self.desenhar)
         )
         self.botaoAbrirImagem.pack(side=LEFT)
-
-        self.desenhar = canvas.DesenhosCanvas(self.canvasElement)
