@@ -1,9 +1,6 @@
 # Caso dê o erro ImportError: libtk8.6.so: cannot open shared object, instale o tkinter através
 # Do comando sudo pacman -S tk
 
-import tkinter.messagebox
-import tkinter.simpledialog
-import math
 from tkinter import *
 import _thread
 
