@@ -53,20 +53,27 @@ class DesenhosCanvas:
         x = self.canvas.canvasx(event.x)
         y = self.canvas.canvasy(event.y)
         bbox = self.canvas.bbox(self.container)  # get image area
-        if bbox[0] < x < bbox[2] and bbox[1] < y < bbox[3]: pass  # Ok! Inside the image
-        else: return  # zoom only inside image area
+        
+        if (bbox[0] < x < bbox[2]) and (bbox[1] < y < bbox[3]): 
+            pass  # Ok! Inside the image
+        else: 
+            return  # zoom only inside image area
+        
         scale = 1.0
         # Respond to Linux (event.num) or Windows (event.delta) wheel event
+        
         if event.num == 5 or event.delta == -120:  # scroll down
             i = min(self.width, self.height)
             if int(i * self.imscale) < 30: return  # image is less than 30 pixels
             self.imscale /= self.delta
             scale        /= self.delta
+            
         if event.num == 4 or event.delta == 120:  # scroll up
             i = min(self.canvas.winfo_width(), self.canvas.winfo_height())
             if i < self.imscale: return  # 1 pixel is bigger than the visible area
             self.imscale *= self.delta
             scale        *= self.delta
+            
         self.canvas.scale('all', x, y, scale, scale)  # rescale all canvas objects
         self.show_image()
         
@@ -75,29 +82,36 @@ class DesenhosCanvas:
         bbox1 = self.canvas.bbox(self.container)  # get image area
         # Remove 1 pixel shift at the sides of the bbox1
         bbox1 = (bbox1[0] + 1, bbox1[1] + 1, bbox1[2] - 1, bbox1[3] - 1)
+        
         bbox2 = (self.canvas.canvasx(0),  # get visible area of the canvas
                  self.canvas.canvasy(0),
                  self.canvas.canvasx(self.canvas.winfo_width()),
                  self.canvas.canvasy(self.canvas.winfo_height()))
+        
         bbox = [min(bbox1[0], bbox2[0]), min(bbox1[1], bbox2[1]),  # get scroll region box
                 max(bbox1[2], bbox2[2]), max(bbox1[3], bbox2[3])]
-        if bbox[0] == bbox2[0] and bbox[2] == bbox2[2]:  # whole image in the visible area
+        
+        if (bbox[0] == bbox2[0]) and (bbox[2] == bbox2[2]):  # whole image in the visible area
             bbox[0] = bbox1[0]
             bbox[2] = bbox1[2]
-        if bbox[1] == bbox2[1] and bbox[3] == bbox2[3]:  # whole image in the visible area
+        if (bbox[1] == bbox2[1]) and (bbox[3] == bbox2[3]):  # whole image in the visible area
             bbox[1] = bbox1[1]
             bbox[3] = bbox1[3]
+            
         self.canvas.configure(scrollregion=bbox)  # set scroll region
+        
         x1 = max(bbox2[0] - bbox1[0], 0)  # get coordinates (x1,y1,x2,y2) of the image tile
         y1 = max(bbox2[1] - bbox1[1], 0)
         x2 = min(bbox2[2], bbox1[2]) - bbox1[0]
         y2 = min(bbox2[3], bbox1[3]) - bbox1[1]
-        if int(x2 - x1) > 0 and int(y2 - y1) > 0:  # show image if it in the visible area
+        
+        if (int(x2 - x1) > 0) and (int(y2 - y1) > 0):  # show image if it in the visible area
             x = min(int(x2 / self.imscale), self.width)   # sometimes it is larger on 1 pixel...
             y = min(int(y2 / self.imscale), self.height)  # ...and sometimes not
+            
             image = self.image.crop((int(x1 / self.imscale), int(y1 / self.imscale), x, y))
             imagetk = ImageTk.PhotoImage(image.resize((int(x2 - x1), int(y2 - y1))))
-            imageid = self.canvas.create_image(max(bbox2[0], bbox1[0]), max(bbox2[1], bbox1[1]),
-                                               anchor='nw', image=imagetk)
+            imageid = self.canvas.create_image(max(bbox2[0], bbox1[0]), max(bbox2[1], bbox1[1]), anchor='nw', image=imagetk)
+            
             self.canvas.lower(imageid)  # set image into background
             self.canvas.imagetk = imagetk  # keep an extra reference to prevent garbage-collection

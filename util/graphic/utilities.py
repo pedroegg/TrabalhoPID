@@ -19,18 +19,6 @@ def setImageWithDialog(canvasObj, desenhosObj):
             print('Nenhuma imagem selecionada ou imagem inválida!')
             return
         
-        """photo = ImageTk.PhotoImage(img)
-        
-        canvasObj.create_image(
-            canvasObj.winfo_width()/2, 
-            canvasObj.winfo_height()/2, 
-            image=photo, 
-            anchor=CENTER
-        )
-        
-        canvasObj.image = photo
-        canvasObj.update()"""
-        
         width, height = img.size
         desenhosObj.setWidth(width)
         desenhosObj.setHeight(height)
