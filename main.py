@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Caso dê o erro ImportError: libtk8.6.so: cannot open shared object, instale o tkinter através
 # Do comando sudo pacman -S tk
 

@@ -26,18 +26,26 @@ class InterfaceGrafica:
         self.containerBotoes2 = Frame(self.containerMenu, bg='#cbccc6')
         self.containerBotoes2.pack(fill=X, anchor='nw')
 
-        self.botaoTranslacao = Button(self.containerBotoes, text="Translação", bd=2, font=self.fonteTitulos)
-        self.botaoTranslacao.pack(side=LEFT)
+        # botoes
+        self.botaoTreinoTeste = Button(self.containerBotoes, text="Treino/Teste", bd=2, font=self.fonteTitulos)
+        self.botaoTreinoTeste.pack(side=LEFT)
         
-        self.botaoRotacao = Button(self.containerBotoes, text="Rotação", bd=2, font=self.fonteTitulos)
-        self.botaoRotacao.pack(side=LEFT)
+        self.botaoCaracteristicas = Button(self.containerBotoes, text="Caracteristicas", bd=2, font=self.fonteTitulos)
+        self.botaoCaracteristicas.pack(side=LEFT)
         
-        self.botaoEscala = Button(self.containerBotoes, text="Escala", bd=2, font=self.fonteTitulos)
-        self.botaoEscala.pack(side=LEFT)
+        self.botaoTreinarClassificador = Button(self.containerBotoes, text="Treinar Classificador", bd=2, font=self.fonteTitulos)
+        self.botaoTreinarClassificador.pack(side=LEFT)
         
-        self.botaoReflexao = Button(self.containerBotoes, text="Reflexões", bd=2, font=self.fonteTitulos)
-        self.botaoReflexao.pack(side=LEFT, fill=X, expand=YES)
+        self.botaoSelecionarRegiao = Button(self.containerBotoes, text="Selecionar região", bd=2, font=self.fonteTitulos)
+        self.botaoSelecionarRegiao.pack(side=LEFT, fill=X, expand=YES)
         
+        self.botaoCalcular = Button(self.containerBotoes, text="Calcular", bd=2, font=self.fonteTitulos)
+        self.botaoCalcular.pack(side=LEFT, fill=X, expand=YES)
+        
+        self.botaoClassificar = Button(self.containerBotoes, text="Classificar", bd=2, font=self.fonteTitulos)
+        self.botaoClassificar.pack(side=LEFT, fill=X, expand=YES)
+
+        # barras
         self.verticalBar = Scrollbar(self.containerCanvas, orient='vertical')
         self.verticalBar.pack(side=RIGHT)
         
