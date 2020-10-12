@@ -1,7 +1,8 @@
 from tkinter import CENTER
 from tkinter import filedialog
-from PIL import Image, ImageTk
+from PIL import Image, ImageTk, ImageDraw
 import random
+import time
 
 # Fazer uma forma da imagem sempre abrir redimensionada para a dimensão atual da janela?
 
@@ -29,7 +30,7 @@ def setImageWithDialog(canvasObj, desenhosObj):
     desenhosObj.show_image()
 
 
-def selectRegion():
-    box = (10,10,100,100)
-
+def selectRegion(canvasObj, desenhosObj):
+    rectangle = canvasObj.create_rectangle(0, 0, 128, 128, fill=None, outline="green", width=2)
     
+    desenhosObj.setRectangle(rectangle)

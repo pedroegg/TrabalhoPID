@@ -36,13 +36,15 @@ class InterfaceGrafica:
         self.botaoTreinarClassificador = Button(self.containerBotoes, text="Treinar Classificador", bd=2, font=self.fonteTitulos)
         self.botaoTreinarClassificador.pack(side=LEFT)
         
-        self.botaoSelecionarRegiao = Button(self.containerBotoes, text="Selecionar região", bd=2, font=self.fonteTitulos)
+        self.botaoSelecionarRegiaoBool = False
+        self.botaoSelecionarRegiao = Button(self.containerBotoes2, text="Selecionar região", bd=2, font=self.fonteTitulos, command=self.SelecionarRegiao)
         self.botaoSelecionarRegiao.pack(side=LEFT, fill=X, expand=YES)
+        self.botaoSelecionarRegiaoCorDefault = self.botaoSelecionarRegiao['bg']
         
-        self.botaoCalcular = Button(self.containerBotoes, text="Calcular", bd=2, font=self.fonteTitulos)
+        self.botaoCalcular = Button(self.containerBotoes2, text="Calcular", bd=2, font=self.fonteTitulos)
         self.botaoCalcular.pack(side=LEFT, fill=X, expand=YES)
         
-        self.botaoClassificar = Button(self.containerBotoes, text="Classificar", bd=2, font=self.fonteTitulos)
+        self.botaoClassificar = Button(self.containerBotoes2, text="Classificar", bd=2, font=self.fonteTitulos)
         self.botaoClassificar.pack(side=LEFT, fill=X, expand=YES)
 
         # barras
@@ -68,7 +70,8 @@ class InterfaceGrafica:
         self.horizontalBar.configure(command=self.desenhar.scroll_x)
         
         self.canvasElement.bind('<Configure>', self.desenhar.show_image)
-        self.canvasElement.bind('<ButtonPress-1>', self.desenhar.move_from)
+        self.canvasElement.bind('<ButtonPress-1>', self.desenhar.move_start)
+        self.canvasElement.bind("<ButtonRelease-1>", self.desenhar.move_stop)
         self.canvasElement.bind('<B1-Motion>', self.desenhar.move_to)
         
         if sys.platform == 'linux':
@@ -76,3 +79,14 @@ class InterfaceGrafica:
             self.canvasElement.bind('<Button-4>', self.desenhar.wheel)  # only with Linux, wheel scroll up
         else:
             self.canvasElement.bind('<MouseWheel>', self.desenhar.wheel)  # with Windows and MacOS, but not Linux
+            
+    def SelecionarRegiao(self):
+        self.botaoSelecionarRegiaoBool = not self.botaoSelecionarRegiaoBool
+        if self.botaoSelecionarRegiaoBool:
+            self.botaoSelecionarRegiao['bg'] = '#99ff99'
+            self.desenhar.setIsRectangle(True)
+            
+            util.selectRegion(self.canvasElement, self.desenhar)
+        else:
+            self.botaoSelecionarRegiao['bg'] = self.botaoSelecionarRegiaoCorDefault
+            self.desenhar.setIsRectangle(False)

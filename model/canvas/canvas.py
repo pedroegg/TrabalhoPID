@@ -10,6 +10,9 @@ class DesenhosCanvas:
         self.imscale = 0
         self.delta = 0
         self.image = None
+        self.rectangle = None
+        self.isRectangle = False
+        self._drag_data = {"x": 0, "y": 0}
         
     def setWidth(self, width):
         self.width = width
@@ -28,6 +31,12 @@ class DesenhosCanvas:
         
     def setContainer(self, container):
         self.container = container
+    
+    def setRectangle(self, rectangle):
+        self.rectangle = rectangle
+        
+    def setIsRectangle(self, isRectangle):
+        self.isRectangle = isRectangle
         
     def scroll_y(self, *args, **kwargs):
         ''' Scroll canvas vertically and redraw the image '''
@@ -39,14 +48,32 @@ class DesenhosCanvas:
         self.canvas.xview(*args, **kwargs)  # scroll horizontally
         self.show_image()  # redraw the image
 
-    def move_from(self, event):
+    def move_start(self, event):
         ''' Remember previous coordinates for scrolling with the mouse '''
         self.canvas.scan_mark(event.x, event.y)
+        self._drag_data["item"] = self.canvas.find_closest(event.x, event.y)[0]
+        self._drag_data["x"] = event.x
+        self._drag_data["y"] = event.y
+        
+    def move_stop(self, event):
+        """End drag of an object"""
+        self._drag_data["x"] = 0
+        self._drag_data["y"] = 0
 
     def move_to(self, event):
         ''' Drag (move) canvas to the new position '''
-        self.canvas.scan_dragto(event.x, event.y, gain=1)
-        self.show_image()  # redraw the image
+        if self.isRectangle:
+            delta_x = event.x - self._drag_data["x"]
+            delta_y = event.y - self._drag_data["y"]
+            
+            self.canvas.move(self.rectangle, delta_x, delta_y)
+
+            self._drag_data["x"] = event.x
+            self._drag_data["y"] = event.y
+        else:
+            self.canvas.scan_dragto(event.x, event.y, gain=1)
+            self.show_image()  # redraw the image
+        
 
     def wheel(self, event):
         ''' Zoom with mouse wheel '''
