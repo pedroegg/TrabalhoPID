@@ -10,6 +10,9 @@ class InterfaceGrafica:
     def __init__(self, master=None):
         self.fontePadrao = ("Arial", "12")
         self.fonteTitulos = ("Arial", "12", "bold")
+        
+        self.directory = None
+        self.imagesByPath = None
 
         self.containerGeral = Frame(master)
         self.containerGeral.pack(fill=BOTH, expand=YES)
@@ -25,29 +28,33 @@ class InterfaceGrafica:
 
         self.containerBotoes2 = Frame(self.containerMenu, bg='#cbccc6')
         self.containerBotoes2.pack(fill=X, anchor='nw')
-
-        # botoes
-        self.botaoTreinoTeste = Button(self.containerBotoes, text="Treino/Teste", bd=2, font=self.fonteTitulos)
-        self.botaoTreinoTeste.pack(side=LEFT)
         
-        self.botaoCaracteristicas = Button(self.containerBotoes, text="Caracteristicas", bd=2, font=self.fonteTitulos)
-        self.botaoCaracteristicas.pack(side=LEFT)
+        self.containerBotoes3 = Frame(self.containerMenu, bg='#cbccc6')
+        self.containerBotoes3.pack(fill=X, anchor='nw')
         
-        self.botaoTreinarClassificador = Button(self.containerBotoes, text="Treinar Classificador", bd=2, font=self.fonteTitulos)
-        self.botaoTreinarClassificador.pack(side=LEFT)
+        self.containerBotoes4 = Frame(self.containerMenu, bg='#cbccc6')
+        self.containerBotoes4.pack(fill=X, anchor='nw')
+        
+        self.botaoAbrirDiretorio = Button(self.containerBotoes, text="Abrir Diretório", bd=2, font=self.fonteTitulos, command=self.SelecionarDiretorio)
+        self.botaoAbrirDiretorio.pack(side=LEFT, fill=X, expand=YES)
+        
+        self.botaoSelecionarCaracteristicas = Button(self.containerBotoes2, text="Selecionar Caracteristicas", bd=2, font=self.fonteTitulos)
+        self.botaoSelecionarCaracteristicas.pack(side=LEFT, fill=X, expand=YES)
         
         self.botaoSelecionarRegiaoBool = False
         self.botaoSelecionarRegiao = Button(self.containerBotoes2, text="Selecionar região", bd=2, font=self.fonteTitulos, command=self.SelecionarRegiao)
         self.botaoSelecionarRegiao.pack(side=LEFT, fill=X, expand=YES)
         self.botaoSelecionarRegiaoCorDefault = self.botaoSelecionarRegiao['bg']
         
-        self.botaoCalcular = Button(self.containerBotoes2, text="Calcular", bd=2, font=self.fonteTitulos)
-        self.botaoCalcular.pack(side=LEFT, fill=X, expand=YES)
+        self.botaoCalcularCaracteristicas = Button(self.containerBotoes3, text="Calcular Caracteristicas", bd=2, font=self.fonteTitulos)
+        self.botaoCalcularCaracteristicas.pack(side=LEFT)
         
-        self.botaoClassificar = Button(self.containerBotoes2, text="Classificar", bd=2, font=self.fonteTitulos)
+        self.botaoClassificar = Button(self.containerBotoes3, text="Classificar", bd=2, font=self.fonteTitulos)
         self.botaoClassificar.pack(side=LEFT, fill=X, expand=YES)
+        
+        self.botaoTreinarClassificador = Button(self.containerBotoes4, text="Treinar Classificador", bd=2, font=self.fonteTitulos)
+        self.botaoTreinarClassificador.pack(side=LEFT, fill=X, expand=YES)
 
-        # barras
         self.verticalBar = Scrollbar(self.containerCanvas, orient='vertical')
         self.verticalBar.pack(side=RIGHT)
         
@@ -57,10 +64,10 @@ class InterfaceGrafica:
         self.canvasElement = Canvas(self.containerCanvas, highlightthickness=0, xscrollcommand=self.horizontalBar.set, yscrollcommand=self.verticalBar.set)
         self.canvasElement.pack(anchor='nw', fill=BOTH, expand=YES)
         
-        self.botaoAbrirImagem = Button(self.containerBotoes2, text="Abrir imagem", bd=2, font=self.fonteTitulos,
-            command=lambda: util.setImageWithDialog(self.canvasElement, self.desenhar)
+        self.botaoAbrirImagem = Button(self.containerBotoes, text="Abrir imagem", bd=2, font=self.fonteTitulos,
+            command=lambda: util.setImageWithDialog(self.canvasElement, self.desenhar, self.directory)
         )
-        self.botaoAbrirImagem.pack(side=LEFT)
+        self.botaoAbrirImagem.pack(side=LEFT, fill=X, expand=YES)
         
         self.desenhar = canvas.DesenhosCanvas(self.canvasElement)
         self.desenhar.setImscale(1.0)
@@ -79,7 +86,11 @@ class InterfaceGrafica:
             self.canvasElement.bind('<Button-4>', self.desenhar.wheel)  # only with Linux, wheel scroll up
         else:
             self.canvasElement.bind('<MouseWheel>', self.desenhar.wheel)  # with Windows and MacOS, but not Linux
-            
+    
+    def SelecionarDiretorio(self):
+        self.directory = util.setDirectory()
+        self.imagesByPath = util.getDirectoryImages(self.directory)
+    
     def SelecionarRegiao(self):
         self.botaoSelecionarRegiaoBool = not self.botaoSelecionarRegiaoBool
         if self.botaoSelecionarRegiaoBool:
@@ -90,3 +101,4 @@ class InterfaceGrafica:
         else:
             self.botaoSelecionarRegiao['bg'] = self.botaoSelecionarRegiaoCorDefault
             self.desenhar.setIsRectangle(False)
+            self.desenhar.cut_by_box()

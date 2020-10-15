@@ -3,14 +3,52 @@ from tkinter import filedialog
 from PIL import Image, ImageTk, ImageDraw
 import random
 import time
+import os
 
 # Fazer uma forma da imagem sempre abrir redimensionada para a dimensão atual da janela?
 
-def setImageWithDialog(canvasObj, desenhosObj):
-    filename = filedialog.askopenfilename(
+def setDirectory():
+    directory = filedialog.askdirectory(
         initialdir="/", 
+        title="Selecione um diretório"
+    )
+    
+    return directory
+
+def getDirectoryImages(directory):   
+    pastasImagens = {
+        "1": [],
+        "2": [],
+        "3": [],
+        "4": []
+    }
+
+    for direct in range(1, 5, 1):
+        actualDirectory = directory + "/" + str(direct)
+        
+        print("-"*20)
+        print("Diretório atual: {}".format(direct))
+        print("-"*20)
+        
+        for filename in os.listdir(actualDirectory):
+            print("Arquivo atual: {}".format(filename))
+            
+            imageDirectory = directory + "/" + str(direct) + "/" + filename
+            
+            pastasImagens[str(direct)].append(Image.open(imageDirectory))
+            
+    return pastasImagens
+            
+
+def setImageWithDialog(canvasObj, desenhosObj, directory):
+    if directory is None:
+        print("Diretório ainda não definido!")
+        return
+    
+    filename = filedialog.askopenfilename(
+        initialdir=directory, 
         title="Selecione uma imagem", 
-        filetypes=(("PNG files", "*.png"), ("TIFF files", "*.tiff"), ("DICOM files", "*.dcm"))
+        filetypes=(("PNG files", "*.png"), ("TIFF files", "*.tiff"), ("DICOM files", "*.dcm")),
     )
     
     try:

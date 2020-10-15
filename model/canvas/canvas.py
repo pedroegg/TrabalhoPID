@@ -73,7 +73,10 @@ class DesenhosCanvas:
         else:
             self.canvas.scan_dragto(event.x, event.y, gain=1)
             self.show_image()  # redraw the image
-        
+            
+    def cut_by_box(self):
+        # self.setContainer(self.rectangle)
+        self.show_image()
 
     def wheel(self, event):
         ''' Zoom with mouse wheel '''
@@ -105,6 +108,9 @@ class DesenhosCanvas:
         self.show_image()
         
     def show_image(self, event=None):
+        if self.container is None:
+            return
+        
         ''' Show image on the Canvas '''
         bbox1 = self.canvas.bbox(self.container)  # get image area
         # Remove 1 pixel shift at the sides of the bbox1
