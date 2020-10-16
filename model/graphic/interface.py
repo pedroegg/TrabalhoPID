@@ -93,12 +93,9 @@ class InterfaceGrafica:
     
     def SelecionarRegiao(self):
         self.botaoSelecionarRegiaoBool = not self.botaoSelecionarRegiaoBool
-        if self.botaoSelecionarRegiaoBool:
-            self.botaoSelecionarRegiao['bg'] = '#99ff99'
-            self.desenhar.setIsRectangle(True)
-            
-            util.selectRegion(self.canvasElement, self.desenhar)
-        else:
-            self.botaoSelecionarRegiao['bg'] = self.botaoSelecionarRegiaoCorDefault
-            self.desenhar.setIsRectangle(False)
-            self.desenhar.cut_by_box()
+        # criar uma vez o retangulo
+        if not self.desenhar.rectangleExist:
+            util.selectRegion(self.canvasElement, self.desenhar)        
+        self.desenhar.setIsRectangle(self.botaoSelecionarRegiaoBool)       
+        # Controle de cor do botao
+        self.botaoSelecionarRegiao['bg'] = ('#99ff99' if self.botaoSelecionarRegiaoBool else self.botaoSelecionarRegiaoCorDefault)

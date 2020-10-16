@@ -12,6 +12,7 @@ class DesenhosCanvas:
         self.image = None
         self.rectangle = None
         self.isRectangle = False
+        self.rectangleExist = False
         self._drag_data = {"x": 0, "y": 0}
         
     def setWidth(self, width):
@@ -37,6 +38,9 @@ class DesenhosCanvas:
         
     def setIsRectangle(self, isRectangle):
         self.isRectangle = isRectangle
+    
+    def setRectangleExist(self, rectangleExist):
+        self.rectangleExist = rectangleExist
         
     def scroll_y(self, *args, **kwargs):
         ''' Scroll canvas vertically and redraw the image '''

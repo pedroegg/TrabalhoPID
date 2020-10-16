@@ -70,5 +70,5 @@ def setImageWithDialog(canvasObj, desenhosObj, directory):
 
 def selectRegion(canvasObj, desenhosObj):
     rectangle = canvasObj.create_rectangle(0, 0, 128, 128, fill=None, outline="green", width=2)
-    
+    desenhosObj.setRectangleExist(True)
     desenhosObj.setRectangle(rectangle)
