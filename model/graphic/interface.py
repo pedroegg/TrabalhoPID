@@ -65,7 +65,7 @@ class InterfaceGrafica:
         self.canvasElement.pack(anchor='nw', fill=BOTH, expand=YES)
         
         self.botaoAbrirImagem = Button(self.containerBotoes, text="Abrir imagem", bd=2, font=self.fonteTitulos,
-            command=lambda: util.setImageWithDialog(self.canvasElement, self.desenhar, self.directory)
+            command=lambda: util.setImageWithDialog(self.canvasElement, self.desenhar)
         )
         self.botaoAbrirImagem.pack(side=LEFT, fill=X, expand=YES)
         
@@ -88,7 +88,7 @@ class InterfaceGrafica:
             self.canvasElement.bind('<MouseWheel>', self.desenhar.wheel)  # with Windows and MacOS, but not Linux
     
     def SelecionarDiretorio(self):
-        self.directory = util.setDirectory()
+        self.directory = util.getDirectory()
         self.imagesByPath = util.getDirectoryImages(self.directory)
     
     def SelecionarRegiao(self):

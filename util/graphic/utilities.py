@@ -1,13 +1,39 @@
-from tkinter import CENTER
+# pip install pydicom
+# pip install pypng
+
 from tkinter import filedialog
-from PIL import Image, ImageTk, ImageDraw
-import random
-import time
+from PIL import Image
 import os
+import pydicom
+import numpy as np
+import png
 
-# Fazer uma forma da imagem sempre abrir redimensionada para a dimensão atual da janela?
+def openDicom(filepath):
+    ds = pydicom.dcmread(filepath)
+    
+    # print("elements: {}".format(ds.elements))
+    # windowCenter = int(str(ds.elements).split("Window Center")[1].split("\"")[1].split("\"")[0].split(".")[0])
+    # windowWidth = int(str(ds.elements).split("Window Width")[1].split("\"")[1].split("\"")[0].split(".")[0])
+    # print("WindowCenter = {}".format(windowCenter))
+    # print("WindowWidth = {}".format(windowWidth))
+    
+    shape = ds.pixel_array.shape
+    
+    if 'WindowWidth' in ds:
+        windowed = pydicom.pixel_data_handlers.util.apply_voi_lut(ds.pixel_array, ds)
+    else:
+        windowed = ds.pixel_array.astype(float)
+    
+    image_2d_scaled = (np.maximum(windowed,0) / windowed.max()) * 255.0
+    image_2d_scaled = np.uint8(image_2d_scaled)
+    filename = "a.png"
+    with open(filename, 'wb') as png_file:
+        w = png.Writer(shape[1], shape[0], greyscale=True)
+        w.write(png_file, image_2d_scaled)
+    
+    return filename
 
-def setDirectory():
+def getDirectory():
     directory = filedialog.askdirectory(
         initialdir="/", 
         title="Selecione um diretório"
@@ -40,18 +66,16 @@ def getDirectoryImages(directory):
     return pastasImagens
             
 
-def setImageWithDialog(canvasObj, desenhosObj, directory):
-    if directory is None:
-        print("Diretório ainda não definido!")
-        return
-    
+def setImageWithDialog(canvasObj, desenhosObj): 
     filename = filedialog.askopenfilename(
-        initialdir=directory, 
+        initialdir="/home/pedroegg/Downloads/", 
         title="Selecione uma imagem", 
-        filetypes=(("PNG files", "*.png"), ("TIFF files", "*.tiff"), ("DICOM files", "*.dcm")),
-    )
+        filetypes=(("PNG files", "*.png"), ("TIFF files", "*.tiff"), ("DICOM files", "*.dcm"), ("DICOM files", "*.DCM")),
+    )   
     
     try:
+        if ".dcm" in str(filename) or ".DCM" in str(filename):
+            filename = openDicom(filename)
         img = Image.open(filename)
         desenhosObj.setImage(img)
     except AttributeError:

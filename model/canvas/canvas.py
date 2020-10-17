@@ -55,7 +55,6 @@ class DesenhosCanvas:
     def move_start(self, event):
         ''' Remember previous coordinates for scrolling with the mouse '''
         self.canvas.scan_mark(event.x, event.y)
-        self._drag_data["item"] = self.canvas.find_closest(event.x, event.y)[0]
         self._drag_data["x"] = event.x
         self._drag_data["y"] = event.y
         
