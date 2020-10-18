@@ -8,18 +8,11 @@ import pydicom
 import numpy as np
 import png
 
-def openDicom(filepath):
+def openDicom(filepath, useVoiLut):
     ds = pydicom.dcmread(filepath)
-    
-    # print("elements: {}".format(ds.elements))
-    # windowCenter = int(str(ds.elements).split("Window Center")[1].split("\"")[1].split("\"")[0].split(".")[0])
-    # windowWidth = int(str(ds.elements).split("Window Width")[1].split("\"")[1].split("\"")[0].split(".")[0])
-    # print("WindowCenter = {}".format(windowCenter))
-    # print("WindowWidth = {}".format(windowWidth))
-    
     shape = ds.pixel_array.shape
     
-    if 'WindowWidth' in ds:
+    if useVoiLut:
         windowed = pydicom.pixel_data_handlers.util.apply_voi_lut(ds.pixel_array, ds)
     else:
         windowed = ds.pixel_array.astype(float)
@@ -41,7 +34,11 @@ def getDirectory():
     
     return directory
 
-def getDirectoryImages(directory):   
+def getDirectoryImages(directory):
+    if directory == () or directory is None or directory == "":
+        print('Nenhum diretório selecionado ou diretório inválido!')
+        return
+    
     pastasImagens = {
         "1": [],
         "2": [],
@@ -66,17 +63,19 @@ def getDirectoryImages(directory):
     return pastasImagens
             
 
-def setImageWithDialog(canvasObj, desenhosObj): 
+def setImageWithDialog(canvasObj, desenhosObj):
     filename = filedialog.askopenfilename(
-        initialdir="/home/pedroegg/Downloads/", 
+        initialdir="/", 
         title="Selecione uma imagem", 
         filetypes=(("PNG files", "*.png"), ("TIFF files", "*.tiff"), ("DICOM files", "*.dcm"), ("DICOM files", "*.DCM")),
-    )   
+    )
     
     try:
         if ".dcm" in str(filename) or ".DCM" in str(filename):
-            filename = openDicom(filename)
-        img = Image.open(filename)
+            img = Image.open(openDicom(filename, True))
+        else:
+            img = Image.open(filename)
+        
         desenhosObj.setImage(img)
     except AttributeError:
         print('Nenhuma imagem selecionada ou imagem inválida!')
@@ -90,7 +89,8 @@ def setImageWithDialog(canvasObj, desenhosObj):
     desenhosObj.setContainer(container)
     
     desenhosObj.show_image()
-
+    
+    return filename
 
 def selectRegion(canvasObj, desenhosObj):
     rectangle = canvasObj.create_rectangle(0, 0, 128, 128, fill=None, outline="green", width=2)
