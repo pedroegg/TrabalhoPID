@@ -12,7 +12,7 @@ def openDicom(filepath, useVoiLut):
     ds = pydicom.dcmread(filepath)
     shape = ds.pixel_array.shape
     
-    if useVoiLut:
+    if 'WindowWidth' in ds:
         windowed = pydicom.pixel_data_handlers.util.apply_voi_lut(ds.pixel_array, ds)
     else:
         windowed = ds.pixel_array.astype(float)
