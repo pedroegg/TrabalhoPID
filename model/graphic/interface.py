@@ -5,6 +5,7 @@ import sys
 
 import model.canvas.canvas as canvas
 import util.graphic.utilities as util
+import lib.haralick as haralick
 
 class InterfaceGrafica:
     def __init__(self, master=None):
@@ -13,6 +14,8 @@ class InterfaceGrafica:
         
         self.directory = ''
         self.imagesByPath = None
+
+        self.cls_svm = None
 
         self.containerGeral = Frame(master)
         self.containerGeral.pack(fill=BOTH, expand=YES)
@@ -53,10 +56,10 @@ class InterfaceGrafica:
         self.botaoCalcularCaracteristicas = Button(self.containerBotoes3, text="Calcular Caracteristicas", bd=2, font=self.fonteTitulos)
         self.botaoCalcularCaracteristicas.pack(side=LEFT)
         
-        self.botaoClassificar = Button(self.containerBotoes3, text="Classificar", bd=2, font=self.fonteTitulos)
+        self.botaoClassificar = Button(self.containerBotoes3, text="Classificar", bd=2, font=self.fonteTitulos, command=self.Classificar)
         self.botaoClassificar.pack(side=LEFT, fill=X, expand=YES)
         
-        self.botaoTreinarClassificador = Button(self.containerBotoes4, text="Treinar Classificador", bd=2, font=self.fonteTitulos)
+        self.botaoTreinarClassificador = Button(self.containerBotoes4, text="Treinar Classificador", bd=2, font=self.fonteTitulos, command=self.TreinarClassificador)
         self.botaoTreinarClassificador.pack(side=LEFT, fill=X, expand=YES)
         
         self.botaoDICOM = Button(self.containerBotaoDICOM, text="Melhorar Qualidade DICOM", bd=2, font=self.fonteTitulos)
@@ -129,3 +132,9 @@ class InterfaceGrafica:
         self.desenhar.setIsRectangle(self.botaoSelecionarRegiaoBool)       
         # Controle de cor do botao
         self.botaoSelecionarRegiao['bg'] = ('#99ff99' if self.botaoSelecionarRegiaoBool else self.botaoCorDefault)
+    
+    def TreinarClassificador(self):
+        self.cls_svm = haralick.train(self.directory)
+
+    def Classificar(self):
+        haralick.classify(self.desenhar.image,self.cls_svm)
