@@ -1,9 +1,10 @@
-import cv2
+import cv2.cv2 as cv2
 import numpy as np
 import os
 import glob
 import mahotas as mt
 from sklearn.svm import LinearSVC
+import time
 
 # function to extract haralick textures from an image
 def extract_features(image):
@@ -26,6 +27,8 @@ def train(train_path):
 
     # loop over the training dataset
     print("[STATUS] Started extracting haralick textures..")
+
+    temp_ini = time.time()
     
     for train_name in train_names:
         cur_path = train_path + "/" + train_name
@@ -51,40 +54,36 @@ def train(train_path):
             i += 1
 
     # have a look at the size of our feature vector and labels
-    print( "Training features: {}".format(np.array(train_features).shape))
-    print( "Training labels: {}".format(np.array(train_labels).shape))
+    print("Training features: {}".format(np.array(train_features).shape))
+    print("Training labels: {}".format(np.array(train_labels).shape))
 
     # create the classifier
     print( "[STATUS] Creating the classifier..")
-    clf_svm = LinearSVC(random_state=9) #,max_iter=1000
+    clf_svm = LinearSVC(random_state=9)
 
-    print("ARRAY TRAIN {}".format(train_features))
-    print("ARRAY LABEL {}".format(train_labels))
     # fit the training data and labels
     print( "[STATUS] Fitting data/label to model..")
     clf_svm.fit(train_features, train_labels)
+
+    temp_fim = time.time()
     
-    #return train_features,train_labels
-    return clf_svm
+    return clf_svm, round(temp_fim - temp_ini, 2)
 
 
-def classify(file,clf_svm):
-
+def classify(file, clf_svm):
     image = cv2.imread(file)
 
-    # convert to grayscale
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-
-    # extract haralick texture from the image
     features = extract_features(gray)
 
-    # evaluate the model and predict label
+    temp_ini = time.time()
     prediction = clf_svm.predict(features.reshape(1, -1))[0]
+    temp_fim = time.time()
 
-    # show the label
     cv2.putText(image, prediction, (20,30), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0,128,128), 3)
-    print( "Prediction - {}".format(prediction) )
 
-    # display the output image
     cv2.imshow("Test_Image", image)
-    cv2.waitKey(0)
+
+    cv2.waitKey(5000)
+    
+    return prediction, round(temp_fim - temp_ini, 2)

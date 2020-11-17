@@ -14,8 +14,11 @@ class InterfaceGrafica:
         
         self.directory = ''
         self.imagesByPath = None
+        self.filename = None
 
         self.cls_svm = None
+        self.train_features = None
+        self.train_labels = None
 
         self.containerGeral = Frame(master)
         self.containerGeral.pack(fill=BOTH, expand=YES)
@@ -37,6 +40,12 @@ class InterfaceGrafica:
         
         self.containerBotoes4 = Frame(self.containerMenu, bg='#cbccc6', pady=3)
         self.containerBotoes4.pack(fill=X, anchor='nw')
+
+        self.containerTempoTreino = Frame(self.containerMenu, bg='#cbccc6', pady=20)
+        self.containerTempoTreino.pack(fill=X, anchor='nw', side=BOTTOM)
+
+        self.containerTempoClassificacao = Frame(self.containerMenu, bg='#cbccc6', pady=3)
+        self.containerTempoClassificacao.pack(fill=X, anchor='nw', side=BOTTOM)
         
         self.containerBotaoDICOM = Frame(self.containerMenu, bg='#cbccc6')
         self.containerBotaoDICOM.pack(fill=X, anchor='se', side=BOTTOM)
@@ -75,6 +84,12 @@ class InterfaceGrafica:
         
         self.botaoAbrirImagem = Button(self.containerBotoes, text="Abrir imagem", bd=2, font=self.fonteTitulos, command=self.OpenImage)
         self.botaoAbrirImagem.pack(side=LEFT, fill=X, expand=YES)
+
+        self.label_tempo_treino = Label(self.containerTempoTreino, text="Tempo de treinamento: ", font=self.fontePadrao)
+        self.label_tempo_treino.pack(side=LEFT, fill=X, expand=YES)
+
+        self.label_tempo_classificacao = Label(self.containerTempoClassificacao, text="Tempo de classificação: ", font=self.fontePadrao, pady=3)
+        self.label_tempo_classificacao.pack(side=LEFT, fill=X, expand=YES)
         
         self.SetDesenhar()
         
@@ -132,3 +147,15 @@ class InterfaceGrafica:
         self.desenhar.setIsRectangle(self.botaoSelecionarRegiaoBool)       
         # Controle de cor do botao
         self.botaoSelecionarRegiao['bg'] = ('#99ff99' if self.botaoSelecionarRegiaoBool else self.botaoCorDefault)
+    
+    def TreinarClassificador(self):
+        self.cls_svm, tempo = haralick.train(self.directory)
+
+        self.label_tempo_treino['text'] = 'Tempo de treinamento: ' + str(tempo) + ' s'
+
+    def Classificar(self):
+        predict, tempo = haralick.classify(self.filename, self.cls_svm)
+
+        self.label_tempo_classificacao['text'] = 'Tempo de classificação: ' + str(tempo) + ' s'
+
+        print("Classificou a imagem como BIRADS " + str(predict))
