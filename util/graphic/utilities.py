@@ -7,6 +7,7 @@ import os
 import pydicom
 import numpy as np
 import png
+import cv2.cv2 as cv2
 
 def openDicom(filepath, useVoiLut):
     ds = pydicom.dcmread(filepath)
@@ -58,7 +59,7 @@ def getDirectoryImages(directory):
             
             imageDirectory = directory + "/" + str(direct) + "/" + filename
             
-            pastasImagens[str(direct)].append(Image.open(imageDirectory))
+            pastasImagens[str(direct)].append(cv2.imread(imageDirectory))
             
     return pastasImagens
             
@@ -93,6 +94,6 @@ def setImageWithDialog(canvasObj, desenhosObj):
     return filename
 
 def selectRegion(canvasObj, desenhosObj):
-    rectangle = canvasObj.create_rectangle(0, 0, 128, 128, fill=None, outline="green", width=2)
+    rectangle = canvasObj.create_rectangle(1, 1, 127, 127, fill=None, outline="green", width=2)
     desenhosObj.setRectangleExist(True)
     desenhosObj.setRectangle(rectangle)

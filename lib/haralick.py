@@ -16,11 +16,7 @@ def extract_features(image):
     return ht_mean
 
 
-def train(train_path):
-
-    # load the training dataset
-    train_names = os.listdir(train_path)
-
+def train(imagesByPath):
     # empty list to hold feature vectors and train labels
     train_features = []
     train_labels   = []
@@ -30,15 +26,12 @@ def train(train_path):
 
     temp_ini = time.time()
     
-    for train_name in train_names:
-        cur_path = train_path + "/" + train_name
-        cur_label = train_name
-        i = 1
+    x = 1
 
-        for file in glob.glob(cur_path + "/*.png"):
-            print("Processing Image - {} in {}".format(i, cur_label))
-            # read the training image
-            image = cv2.imread(file)
+    for path in imagesByPath:
+        print("Path atual = {}".format(path))
+        for image in imagesByPath[path]:
+            print("Processing Image {}".format(x))
 
             # convert the image to grayscale
             gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -48,10 +41,9 @@ def train(train_path):
 
             # append the feature vector and label
             train_features.append(features)
-            train_labels.append(cur_label)
+            train_labels.append(path)
 
-            # show loop update
-            i += 1
+            x += 1
 
     # have a look at the size of our feature vector and labels
     print("Training features: {}".format(np.array(train_features).shape))

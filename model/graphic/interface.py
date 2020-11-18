@@ -6,6 +6,7 @@ import sys
 import model.canvas.canvas as canvas
 import util.graphic.utilities as util
 import lib.haralick as haralick
+from PIL import Image
 
 class InterfaceGrafica:
     def __init__(self, master=None):
@@ -149,12 +150,15 @@ class InterfaceGrafica:
         self.botaoSelecionarRegiao['bg'] = ('#99ff99' if self.botaoSelecionarRegiaoBool else self.botaoCorDefault)
     
     def TreinarClassificador(self):
-        self.cls_svm, tempo = haralick.train(self.directory)
+        self.cls_svm, tempo = haralick.train(self.imagesByPath)
 
         self.label_tempo_treino['text'] = 'Tempo de treinamento: ' + str(tempo) + ' s'
 
     def Classificar(self):
-        predict, tempo = haralick.classify(self.filename, self.cls_svm)
+        imagem = self.desenhar.image.crop(self.canvasElement.bbox(self.desenhar.rectangle))
+        imagem.save("imageToClassify.png")
+
+        predict, tempo = haralick.classify("imageToClassify.png", self.cls_svm)
 
         self.label_tempo_classificacao['text'] = 'Tempo de classificação: ' + str(tempo) + ' s'
 
