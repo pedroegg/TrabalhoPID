@@ -58,8 +58,14 @@ def getDirectoryImages(directory):
             print("Arquivo atual: {}".format(filename))
             
             imageDirectory = directory + "/" + str(direct) + "/" + filename
+
+            structure = {
+                "filename": imageDirectory,
+                "BIRADS": direct,
+                "image": cv2.imread(imageDirectory)
+            }
             
-            pastasImagens[str(direct)].append(cv2.imread(imageDirectory))
+            pastasImagens[str(direct)].append(structure)
             
     return pastasImagens
             

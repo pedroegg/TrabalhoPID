@@ -17,7 +17,7 @@ def iniciarThreadAtualizar():
 
 root = Tk()
 root.title("Trabalho Processamento de Imagens Digitais")
-root.geometry("800x480")
+root.geometry("900x580")
 interface = gui.InterfaceGrafica(root)
 root.after(100, iniciarThreadAtualizar)
 root.mainloop()
