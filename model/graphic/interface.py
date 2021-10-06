@@ -14,7 +14,6 @@ class InterfaceGrafica:
         self.fontePadrao = ("Arial", "12")
         self.fonteTitulos = ("Arial", "12", "bold")
         
-        self.directory = ''
         self.imagesByPath = None
         self.filename = None
 
@@ -24,6 +23,10 @@ class InterfaceGrafica:
         self.selected_caracteristics = []
 
         self.containerGeral = Frame(master)
+        self.containerGeral.bind('<Right>', self.ProximaImagem)
+        self.containerGeral.bind('<Left>', self.AnteriorImagem)
+        self.containerGeral.bind('x', self.CalcularCaracteristicas)
+        self.containerGeral.focus_set()
         self.containerGeral.pack(fill=BOTH, expand=YES)
 
         self.containerMenu = Frame(self.containerGeral, bg='#cbccc6', width=100)
@@ -150,9 +153,6 @@ class InterfaceGrafica:
         
         self.canvasElement = Canvas(self.containerCanvas, highlightthickness=0, xscrollcommand=self.horizontalBar.set, yscrollcommand=self.verticalBar.set)
         self.canvasElement.pack(anchor='nw', fill=BOTH, expand=YES)
-        
-        self.botaoAbrirImagem = Button(self.containerBotoes, text="Abrir imagem", bd=2, font=self.fonteTitulos, command=self.OpenImage)
-        self.botaoAbrirImagem.pack(side=LEFT, fill=X, expand=YES)
 
         self.label_titulo_matriz = Label(self.containerTituloMatriz, text="Matriz de Confusão:", font=self.fontePadrao)
         self.label_titulo_matriz.pack(side=LEFT, fill=X, expand=YES)
@@ -209,20 +209,6 @@ class InterfaceGrafica:
         self.SetDesenhar()
         self.SetCanvasBinds()
     
-    def OpenImage(self):  
-        self.ResetAll()
-        
-        self.filename = util.setImageWithDialog(self.canvasElement, self.desenhar)
-        
-        if self.filename.lower().split('.')[1] == 'dcm':
-            self.botaoDICOM.pack(side=RIGHT)
-        else:
-            self.botaoDICOM.pack_forget()
-    
-    def SelecionarDiretorio(self):
-        self.directory = util.getDirectory()
-        self.imagesByPath = util.getDirectoryImages(self.directory)
-    
     def SelecionarRegiao(self):
         self.botaoSelecionarRegiaoBool = not self.botaoSelecionarRegiaoBool
         # criar uma vez o retangulo
@@ -261,7 +247,7 @@ class InterfaceGrafica:
         if self.optIMC2.get() == 1:
             self.selected_caracteristics.append(12)
 
-    def CalcularCaracteristicas(self):
+    def CalcularCaracteristicas(self, event):
         imagem = self.desenhar.image.crop(self.canvasElement.bbox(self.desenhar.rectangle))
         imagem.save("imageToClassify.png")
 
@@ -316,3 +302,33 @@ class InterfaceGrafica:
         self.label_tempo_classificacao['text'] = 'Tempo de classificação: ' + str(tempo) + ' s'
 
         print("Classificou a imagem como BIRADS " + str(predict))
+    
+    def OpenImage(self, file):  
+        self.ResetAll()
+
+        util.setImage(file['image'], self.canvasElement, self.desenhar)
+
+        self.filename = file['filename']
+        
+    def SelecionarDiretorio(self):
+        directory = util.getDirectory()
+        self.imagesByPath = util.getDirectoryImages(directory)
+        
+        self.OpenImage(self.imagesByPath[0])
+
+    def ProximaImagem(self, event):
+        for index, file in enumerate(self.imagesByPath):
+            if file['filename'] == self.filename:
+                if index < len(self.imagesByPath)-1:
+                    return self.OpenImage(self.imagesByPath[index+1])
+
+                break
+    
+    def AnteriorImagem(self, event):
+        for index, file in enumerate(self.imagesByPath):
+            if file['filename'] == self.filename:
+                if index > 0:
+                    return self.OpenImage(self.imagesByPath[index-1])
+
+                break
+        

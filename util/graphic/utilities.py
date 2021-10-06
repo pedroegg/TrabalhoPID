@@ -36,70 +36,47 @@ def getDirectory():
     return directory
 
 def getDirectoryImages(directory):
-    if directory == () or directory is None or directory == "":
-        print('Nenhum diretório selecionado ou diretório inválido!')
-        return
-    
-    pastasImagens = {
-        "1": [],
-        "2": [],
-        "3": [],
-        "4": []
-    }
+	if directory == () or directory is None or directory == "":
+		print('Nenhum diretório selecionado ou diretório inválido!')
+		return
 
-    for direct in range(1, 5, 1):
-        actualDirectory = directory + "/" + str(direct)
-        
-        print("-"*20)
-        print("Diretório atual: {}".format(direct))
-        print("-"*20)
-        
-        for filename in os.listdir(actualDirectory):
-            print("Arquivo atual: {}".format(filename))
-            
-            imageDirectory = directory + "/" + str(direct) + "/" + filename
+	files = []
+	for filename in os.listdir(directory):
+		print("Carregando arquivo: {}".format(filename))
 
-            structure = {
-                "filename": imageDirectory,
-                "BIRADS": direct,
-                "image": cv2.imread(imageDirectory)
-            }
-            
-            pastasImagens[str(direct)].append(structure)
-            
-    return pastasImagens
-            
+		imageDirectory = directory + "/" + filename
 
-def setImageWithDialog(canvasObj, desenhosObj):
-    filename = filedialog.askopenfilename(
-        initialdir="/", 
-        title="Selecione uma imagem", 
-        filetypes=(("PNG files", "*.png"), ("TIFF files", "*.tiff"), ("DICOM files", "*.dcm"), ("DICOM files", "*.DCM")),
-    )
-    
-    try:
-        if ".dcm" in str(filename) or ".DCM" in str(filename):
-            img = Image.open(openDicom(filename, True))
-        else:
-            img = Image.open(filename)
-        
-        desenhosObj.setImage(img)
-    except AttributeError:
-        print('Nenhuma imagem selecionada ou imagem inválida!')
-        return
-    
-    width, height = img.size
-    desenhosObj.setWidth(width)
-    desenhosObj.setHeight(height)
-    
-    container = canvasObj.create_rectangle(0, 0, width, height, width=0)
-    desenhosObj.setContainer(container)
-    
-    desenhosObj.show_image()
-    
-    return filename
+		try:
+			structure = {
+				"filename": filename,
+				"image": Image.open(imageDirectory),
+			}
+
+			files.append(structure)
+
+		except:
+			print('Nenhuma imagem selecionada ou imagem inválida!')
+
+	return files
+
+def setImage(imagem, canvasObj, desenhosObj):
+	try:
+		desenhosObj.setImage(imagem)
+
+	except AttributeError:
+		print('Nenhuma imagem selecionada ou imagem inválida!')
+		return
+
+	width, height = imagem.size
+	desenhosObj.setWidth(width)
+	desenhosObj.setHeight(height)
+
+	container = canvasObj.create_rectangle(0, 0, width, height, width=0)
+	desenhosObj.setContainer(container)
+
+	desenhosObj.show_image()
 
 def selectRegion(canvasObj, desenhosObj):
-    rectangle = canvasObj.create_rectangle(1, 1, 127, 127, fill=None, outline="green", width=2)
-    desenhosObj.setRectangleExist(True)
-    desenhosObj.setRectangle(rectangle)
+	rectangle = canvasObj.create_rectangle(1, 1, 127, 127, fill=None, outline="green", width=2)
+	desenhosObj.setRectangleExist(True)
+	desenhosObj.setRectangle(rectangle)
